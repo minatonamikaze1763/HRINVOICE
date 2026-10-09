@@ -755,3 +755,195 @@ button:hover {
     page-break-inside: avoid;
   }
 }
+
+/* ==========================================
+   HERO INVOICE HEADER — MATCH REFERENCE IMAGE
+========================================== */
+
+.invoice {
+  width: 210mm;
+  min-width: 0;
+  max-width: none;
+  min-height: 297mm;
+  padding: 12mm 9mm;
+  background: #fff;
+  color: #111;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt;
+  line-height: 1.22;
+}
+
+/* Small logo at the top-left */
+.invoice .invoice-logo {
+  display: block;
+  width: 100%;
+  margin: 0 0 15px;
+  padding: 0;
+}
+
+.invoice .hero-company-logo {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 90px;
+  max-height: 65px;
+  object-fit: contain;
+  object-position: left top;
+}
+
+/* Dealer details directly below the logo */
+.invoice .top {
+  display: block;
+  padding: 0;
+  margin: 0 0 30px;
+}
+
+.invoice .top h2 {
+  margin: 0 0 3px;
+  font-size: 10pt;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0;
+  overflow-wrap: normal;
+}
+
+.invoice .seller-sub {
+  margin: 0;
+  padding: 0;
+  font-size: 7.5pt;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+/* Title centered; invoice number and date on the right */
+.invoice .invoice-title-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  width: 100%;
+  margin: 0 0 12px;
+  gap: 4px;
+}
+
+.invoice .invoice-title-spacer {
+  min-width: 0;
+}
+
+.invoice .invoice-document-title {
+  min-width: 0;
+  text-align: center;
+}
+
+.invoice .invoice-document-title .tax-title {
+  margin: 0;
+  text-align: center;
+  font-size: 11pt;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.invoice .invoice-document-meta {
+  position: absolute;
+  right: 0;
+  bottom: -2.5rem;
+  min-width: 0;
+  font-size: 7.5pt;
+  line-height: 1.35;
+}
+
+.invoice .invoice-document-meta > div {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 4px;
+  align-items: start;
+}
+
+.invoice .invoice-document-meta b {
+  font-weight: 700;
+}
+
+.invoice .invoice-document-meta span {
+  overflow-wrap: anywhere;
+}
+
+/* Customer details: compact label/value rows */
+.invoice .meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 7px;
+  margin: 0 0 14px;
+  padding: 0;
+}
+
+.invoice .meta .kv {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 5px;
+  align-items: start;
+  min-width: 0;
+  font-size: 8pt;
+  line-height: 1.25;
+}
+
+.invoice .meta .key {
+  font-weight: 700;
+}
+
+.invoice .meta .kv > span:last-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Keep the vehicle table within the A4 printable width */
+.invoice .vehicle-tax-table {
+  width: 100%;
+  table-layout: fixed;
+  margin-top: 12px;
+}
+
+/* Screen preview should retain the A4 paper shape */
+.preview-wrap {
+  overflow: auto;
+}
+
+@media print {
+  .invoice {
+    width: 210mm !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    min-height: 297mm;
+    padding: 10mm 9mm !important;
+    box-shadow: none !important;
+    font-size: 8pt !important;
+  }
+
+  .invoice .invoice-logo {
+    margin-bottom: 12px;
+  }
+
+  .invoice .hero-company-logo {
+    max-width: 90px;
+    max-height: 65px;
+  }
+
+  .invoice .top {
+    margin-bottom: 25px;
+  }
+
+  .invoice .invoice-title-row {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .invoice .meta {
+    gap: 6px;
+  }
+
+  .invoice .meta .kv {
+    grid-template-columns: 105px minmax(0, 1fr);
+    font-size: 7.5pt;
+  }
+}

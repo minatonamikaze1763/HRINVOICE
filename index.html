@@ -97,7 +97,9 @@
 
               <div class="field">
                 <label>Contact ID (optional)</label>
-                <input id="contactId" placeholder="Contact ID">
+                <input id="contactId" value="10175-01-SCON-0926-3730"
+                  placeholder="Contact ID">
+
               </div>
             </div>
           </fieldset>
@@ -207,52 +209,54 @@
 
         <div class="preview-wrap">
           <article class="invoice" id="invoice">
+            <!-- HERO LOGO -->
+            <div class="invoice-logo">
+              <img
+                src="images/logo.jpeg"
+                alt="Hero MotoCorp Logo"
+                class="hero-company-logo">
+            </div>
 
-            <!-- INVOICE HEADER: HERO LOGO ON THE LEFT -->
-            <div class="invoice-brand-row">
-              <div class="invoice-logo">
-                <img
-                  src="images/logo.jpeg"
-                  alt="Hero MotoCorp Logo"
-                  class="hero-company-logo">
+            <!-- SELLER DETAILS UNDER LOGO -->
+            <div class="top">
+              <h2 id="pSeller">VENKATESHWARA ENTERPRISES</h2>
+              <div class="seller-sub" id="pSellerAddress">
+                PLOT NO – 11&12 VINAYAKA NAGAR HYDERABAD ROAD
               </div>
+              <div class="seller-sub" id="pSellerState">
+                NIZAMABAD NIZAMABAD TELANGANA 503111
+              </div>
+              <div class="seller-sub">
+                <span id="pDealer">Authorized Dealer: Hero MotoCorp Ltd.</span>
+                <span> State Code: <span id="pStateCode">36</span></span>
+              </div>
+              <div class="seller-sub">
+                GSTIN: <span id="pGSTIN">36AARPN7319L4ZW</span>
+                Contact # <span id="pSellerPhone">8462235533</span>
+              </div>
+            </div>
+
+            <!-- CENTERED TITLE WITH INVOICE DETAILS ON RIGHT -->
+            <div class="invoice-title-row">
+              <div class="invoice-title-spacer"></div>
 
               <div class="invoice-document-title">
                 <div class="tax-title">TAX INVOICE</div>
-                <div class="invoice-number-line">
+              </div>
+
+              <div class="invoice-document-meta">
+                <div>
                   <b>Invoice #</b>
                   <span id="pInvoiceNo">—</span>
                 </div>
-                <div class="invoice-date-line">
+                <div>
                   <b>Date</b>
                   <span id="pDate">—</span>
                 </div>
               </div>
             </div>
 
-            <!-- SELLER DETAILS -->
-            <div class="top">
-              <div>
-                <h2 id="pSeller">VENKATESHWARA ENTERPRISES</h2>
-                <div class="seller-sub" id="pSellerAddress">
-                  Business address, city, state, PIN
-                </div>
-                <div class="seller-sub" id="pSellerState">
-                  NIZAMABAD NIZAMABAD TELANGANA 503111 · State Code: 36
-                </div>
-                <div class="seller-sub" id="pDealer">
-                  Authorized Dealer: Hero MotoCorp Ltd.
-                </div>
-                <div class="seller-sub" id="pGSTIN">
-                  GSTIN #: 36AARPN7319L4ZW
-                </div>
-                <div class="seller-sub" id="pSellerPhone">
-                  Contact # 8462235533
-                </div>
-              </div>
-            </div>
-
-            <!-- CUSTOMER AND INVOICE INFORMATION -->
+            <!-- CUSTOMER DETAILS -->
             <div class="meta">
               <div class="kv">
                 <span class="key">Place of Supply</span>
@@ -260,28 +264,13 @@
               </div>
 
               <div class="kv">
-                <span class="key">Contact ID</span>
+                <span class="key">Contact Id</span>
                 <span id="pContactId">—</span>
               </div>
 
               <div class="kv">
-                <span class="key">Customer Name</span>
+                <span class="key">Name of the Customer</span>
                 <span id="pCustomer">—</span>
-              </div>
-
-              <div class="kv">
-                <span class="key">Payment Mode</span>
-                <span id="pPayment">Cash</span>
-              </div>
-
-              <div class="kv">
-                <span class="key">S/o, D/o, W/o</span>
-                <span id="pRelation">—</span>
-              </div>
-
-              <div class="kv">
-                <span class="key">Mobile / Home Ph #</span>
-                <span id="pPhone">—</span>
               </div>
 
               <div class="kv">
@@ -291,10 +280,24 @@
 
               <div class="kv">
                 <span class="key">State Code</span>
-                <span id="pStateCode">36</span>
+                <span>36</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">Mobile / Home Ph #</span>
+                <span id="pPhone">—</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">S/o, D/o, W/o</span>
+                <span id="pRelation">—</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">Payment Mode</span>
+                <span id="pPayment">Cash</span>
               </div>
             </div>
-
             <!-- VEHICLE DETAILS + DESCRIPTION + ALL TAX TOTALS IN ONE TABLE -->
             <table class="vehicle-tax-table">
               <thead>
