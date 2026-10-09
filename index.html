@@ -1,0 +1,437 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NDC INVOICE SYSTEM</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <header>
+      <div class="brand">NDC • DOCUMENT TOOLS</div>
+      <h1>NDC INVOICE SYSTEM</h1>
+      <p>Hero MotoCorp dealer invoice generator · Fixed dealer details · Live
+        tax calculations · Print-ready layout</p>
+    </header>
+
+    <main>
+      <section class="panel form-panel">
+        <div class="panel-head">Invoice details</div>
+        <div class="form-body">
+
+          <fieldset>
+            <legend>Fixed Hero dealer details</legend>
+            <p class="hint">These details are fixed from your uploaded invoice
+              and will appear on every invoice.</p>
+
+            <input type="hidden" id="seller" value="VENKATESHWARA ENTERPRISES">
+            <input type="hidden" id="sellerAddress"
+              value="PLOT NO – 11&12 VINAYAKA NAGAR HYDERABAD ROAD, NIZAMABAD, NIZAMABAD, TELANGANA 503111">
+            <input type="hidden" id="gstin" value="36AARPN7319L4ZW">
+            <input type="hidden" id="sellerPhone" value="8462235533">
+            <input type="hidden" id="sellerState" value="TELANGANA">
+            <input type="hidden" id="stateCode" value="36">
+            <input type="hidden" id="dealer"
+              value="Authorized Dealer: Hero MotoCorp Ltd.">
+
+            <div class="auto">VENKATESHWARA ENTERPRISES · Authorized Dealer:
+              Hero MotoCorp Ltd.</div>
+
+            <p class="hint">PLOT NO – 11&12 VINAYAKA NAGAR HYDERABAD ROAD,
+              NIZAMABAD, TELANGANA 503111</p>
+            <p class="hint">GSTIN: 36AARPN7319L4ZW · Contact: 8462235533 · State
+              Code: 36</p>
+          </fieldset>
+
+          <fieldset>
+            <legend>Customer &amp; invoice</legend>
+            <div class="fields">
+              <div class="field full">
+                <label>Customer name</label>
+                <input id="customer" placeholder="Customer full name">
+              </div>
+
+              <div class="field full">
+                <label>S/o, D/o, W/o (optional)</label>
+                <input id="relation" placeholder="Father / guardian name">
+              </div>
+
+              <div class="field full">
+                <label>Customer address</label>
+                <textarea id="address"
+                  placeholder="House, street, village/city, district, state, PIN"></textarea>
+              </div>
+
+              <div class="field">
+                <label>Mobile / home phone</label>
+                <input id="phone" inputmode="tel" placeholder="Customer phone">
+              </div>
+
+              <div class="field">
+                <label>Invoice date</label>
+                <input id="date" type="datetime-local">
+              </div>
+
+              <div class="field">
+                <label>Invoice number</label>
+                <input id="invoiceNo" placeholder="Invoice number">
+              </div>
+
+              <div class="field">
+                <label>Payment mode</label>
+                <select id="payment">
+                  <option>Cash</option>
+                  <option>HP / Finance</option>
+                  <option>UPI</option>
+                  <option>Card</option>
+                  <option>Bank transfer</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Place of supply</label>
+                <input id="supply" value="TELANGANA, 36">
+              </div>
+
+              <div class="field">
+                <label>Contact ID (optional)</label>
+                <input id="contactId" placeholder="Contact ID">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Vehicle details</legend>
+            <div class="fields">
+              <div class="field">
+                <label>Model</label>
+                <input id="model" placeholder="Vehicle model">
+              </div>
+
+              <div class="field">
+                <label>Variant code</label>
+                <input id="variantCode" placeholder="Variant code">
+              </div>
+
+              <div class="field full">
+                <label>Variant name / description</label>
+                <input id="variantName" placeholder="Full variant name">
+              </div>
+
+              <div class="field">
+                <label>Variant colour</label>
+                <input id="colour" placeholder="Colour">
+              </div>
+
+              <div class="field">
+                <label>HSN code</label>
+                <input id="hsn" value="87112029">
+              </div>
+
+              <div class="field">
+                <label>UOM</label>
+                <input id="uom" value="PC">
+              </div>
+
+              <div class="field">
+                <label>Engine number</label>
+                <input id="engine" placeholder="Engine number">
+              </div>
+
+              <div class="field full">
+                <label>Chassis number</label>
+                <input id="chassis" placeholder="Chassis number">
+              </div>
+
+              <div class="field full">
+                <label>Ex-showroom price (tax inclusive, ₹)</label>
+                <input id="exShowroom" type="number" min="0" step="0.01"
+                  placeholder="e.g. 83403">
+              </div>
+
+              <div class="field">
+                <label>CGST rate (%)</label>
+                <input id="cgstRate" type="number" min="0" max="100"
+                  step="0.01" value="9">
+              </div>
+
+              <div class="field">
+                <label>SGST rate (%)</label>
+                <input id="sgstRate" type="number" min="0" max="100"
+                  step="0.01" value="9">
+              </div>
+
+              <div class="field full">
+                <div class="auto" id="calcSummary">
+                  Enter ex-showroom price to calculate tax breakup.
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Other information</legend>
+            <div class="fields">
+              <div class="field full">
+                <label>Remarks</label>
+                <textarea id="remarks"
+                  placeholder="Optional remarks">HSRP - No extra charge shall be taken for affixing HSRP by any of HMCL Network Partner.
+</textarea>
+              </div>
+
+              <div class="field full">
+                <label>Extra note</label>
+                <input id="note"
+                  value="Vehicle cost is inclusive of toolkit, owner's manual and first aid kit.">
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="button" id="printBtn">Print / Save PDF</button>
+            <button type="button" class="secondary" id="clearBtn">
+              Clear customer &amp; vehicle
+            </button>
+          </div>
+
+          <p class="hint">Use only accurate, authorized seller and tax details.
+            Verify the applicable GST rate and tax treatment before issuing a
+            real tax invoice.</p>
+        </div>
+      </section>
+
+      <section class="panel preview-panel">
+        <div class="panel-head preview-head">Live invoice preview</div>
+
+        <div class="preview-wrap">
+          <article class="invoice" id="invoice">
+
+            <!-- INVOICE HEADER: HERO LOGO ON THE LEFT -->
+            <div class="invoice-brand-row">
+              <div class="invoice-logo">
+                <img
+                  src="images/logo.jpeg"
+                  alt="Hero MotoCorp Logo"
+                  class="hero-company-logo">
+              </div>
+
+              <div class="invoice-document-title">
+                <div class="tax-title">TAX INVOICE</div>
+                <div class="invoice-number-line">
+                  <b>Invoice #</b>
+                  <span id="pInvoiceNo">—</span>
+                </div>
+                <div class="invoice-date-line">
+                  <b>Date</b>
+                  <span id="pDate">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- SELLER DETAILS -->
+            <div class="top">
+              <div>
+                <h2 id="pSeller">VENKATESHWARA ENTERPRISES</h2>
+                <div class="seller-sub" id="pSellerAddress">
+                  Business address, city, state, PIN
+                </div>
+                <div class="seller-sub" id="pSellerState">
+                  NIZAMABAD NIZAMABAD TELANGANA 503111 · State Code: 36
+                </div>
+                <div class="seller-sub" id="pDealer">
+                  Authorized Dealer: Hero MotoCorp Ltd.
+                </div>
+                <div class="seller-sub" id="pGSTIN">
+                  GSTIN #: 36AARPN7319L4ZW
+                </div>
+                <div class="seller-sub" id="pSellerPhone">
+                  Contact # 8462235533
+                </div>
+              </div>
+            </div>
+
+            <!-- CUSTOMER AND INVOICE INFORMATION -->
+            <div class="meta">
+              <div class="kv">
+                <span class="key">Place of Supply</span>
+                <span id="pSupply">TELANGANA, 36</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">Contact ID</span>
+                <span id="pContactId">—</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">Customer Name</span>
+                <span id="pCustomer">—</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">Payment Mode</span>
+                <span id="pPayment">Cash</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">S/o, D/o, W/o</span>
+                <span id="pRelation">—</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">Mobile / Home Ph #</span>
+                <span id="pPhone">—</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">Address</span>
+                <span id="pAddress" style="white-space: pre-line">—</span>
+              </div>
+
+              <div class="kv">
+                <span class="key">State Code</span>
+                <span id="pStateCode">36</span>
+              </div>
+            </div>
+
+            <!-- VEHICLE DETAILS + DESCRIPTION + ALL TAX TOTALS IN ONE TABLE -->
+            <table class="vehicle-tax-table">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Model</th>
+                  <th>Variant</th>
+                  <th>Color</th>
+                  <th>HSN No.</th>
+                  <th>UOM</th>
+                  <th>Engine #</th>
+                  <th>Chassis #</th>
+                  <th class="num">CGST %</th>
+                  <th class="num">SGST %</th>
+                  <th class="num">Amount</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <!-- Vehicle details -->
+                <tr>
+                  <td>1.</td>
+                  <td id="pModel">—</td>
+                  <td id="pVariantCode">—</td>
+                  <td id="pColour">—</td>
+                  <td id="pHsn">87112029</td>
+                  <td id="pUom">PC</td>
+                  <td id="pEngine">—</td>
+                  <td id="pChassis">—</td>
+                  <td class="num" id="pCgstRate">9%</td>
+                  <td class="num" id="pSgstRate">9%</td>
+                  <td class="num" id="pTaxable">₹0.00</td>
+                </tr>
+
+                <!-- Full vehicle variant description -->
+                <tr class="description-row">
+                  <td colspan="11">
+                    <span id="pVariantName"></span>
+                  </td>
+                </tr>
+
+                <!-- Subtotal -->
+                <tr class="summary-row">
+                  <td colspan="10">Sub Total</td>
+                  <td class="num" id="pSubtotal">₹0.00</td>
+                </tr>
+
+                <!-- Taxable value -->
+                <tr class="summary-row">
+                  <td colspan="10">Taxable Value</td>
+                  <td class="num" id="pTaxable2">₹0.00</td>
+                </tr>
+
+                <!-- CGST -->
+                <tr class="summary-row">
+                  <td colspan="10">
+                    <span id="pCgstLabel">CGST on 0.00</span>
+                  </td>
+                  <td class="num" id="pCgst">₹0.00</td>
+                </tr>
+
+                <!-- SGST -->
+                <tr class="summary-row">
+                  <td colspan="10">
+                    <span id="pSgstLabel">SGST on 0.00</span>
+                  </td>
+                  <td class="num" id="pSgst">₹0.00</td>
+                </tr>
+
+                <!-- Ex-showroom price -->
+                <tr class="summary-row">
+                  <td colspan="10">Ex Showroom Price</td>
+                  <td class="num" id="pExShowroom">₹0.00</td>
+                </tr>
+
+                <!-- Grand total -->
+                <tr class="grand-total-row">
+                  <td colspan="10">Grand Total</td>
+                  <td class="num" id="pGrand">₹0.00</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="description" id="pVariantName"></div>
+
+            <div class="words" id="pWords">Rupees Zero Only</div>
+            <div class="note" id="pNote"></div>
+
+            <div class="note">
+              <b>Remarks:</b>
+              <span id="pRemarks">—</span>
+            </div>
+
+            <!-- SIGNATURES -->
+            <div class="signatures">
+
+              <div class="sign customer-signature">
+                <div class="signature-label"><strong>Customer's
+                    Signature</strong></div>
+
+                <!-- HERO APP IMAGE UNDER CUSTOMER SIGNATURE -->
+                <div class="hero-app-promo">
+                  <img
+                    src="images/download.jpeg"
+                    alt="Download the Hero app from the Play Store or App Store"
+                    class="hero-app-image">
+                </div>
+              </div>
+
+              <div class="sign company-signature">
+                <div>
+                  For <span id="pSignSeller">VENKATESHWARA ENTERPRISES</span>
+                </div>
+                <br>
+                <br>
+                <strong>Authorized Signatory</strong>
+              </div>
+
+            </div>
+
+            <!-- GO PAPERLESS IMAGE AT THE BOTTOM -->
+            <div class="paperless-banner">
+              <img
+                src="images/gopaper.jpeg"
+                alt=" Go Paperless"
+                class="paperless-image">
+            </div>
+
+            <div class="foot">
+
+            </div>
+
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
