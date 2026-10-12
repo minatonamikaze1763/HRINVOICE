@@ -409,7 +409,19 @@ button:hover {
 .invoice .company-signature {
   min-width: 0;
 }
-
+.company-signature {
+  position: relative;
+}
+.company-signature .signstamp {
+  position: absolute;
+  top: -15px;
+  left: 40px;
+  width: 100%;
+  max-width: 230px;
+  max-height: 95px;
+  height: auto;
+  z-index: 11;
+}
 .invoice .customer-signature {
   display: flex;
   flex-direction: column;
@@ -448,7 +460,7 @@ button:hover {
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-top: 13rem;
+  margin-top: 12rem;
   padding-top: 10px;
 }
 
@@ -511,7 +523,6 @@ button:hover {
   }
 
   .invoice .signatures,
-  .invoice .paperless-banner,
   .invoice .foot {
     break-inside: avoid;
     page-break-inside: avoid;
@@ -749,7 +760,6 @@ button:hover {
   }
 
   .invoice .signatures,
-  .invoice .paperless-banner,
   .invoice .foot {
     break-inside: avoid;
     page-break-inside: avoid;
