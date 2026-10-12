@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NDC INVOICE SYSTEM</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
   </head>
   <body>
 
@@ -248,6 +251,9 @@
             <button type="button" class="secondary" id="clearBtn">
               Clear customer &amp; vehicle
             </button>
+            <button type="button" id="generateBundleBtn">
+  Generate Invoice + Form 22 ZIP
+</button>
           </div>
 
           <p class="hint">Use only accurate, authorized seller and tax details.
