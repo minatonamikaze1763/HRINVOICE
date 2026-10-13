@@ -285,6 +285,7 @@ $("clearBtn").addEventListener("click", () => {
     "chassis",
     "exShowroom",
     "payment",
+    "insuranceIdv"
   ].forEach((id) => {
     const field = $(id);
     if (field) field.value = "";
