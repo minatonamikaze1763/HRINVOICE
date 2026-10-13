@@ -828,3 +828,36 @@ function deleteSavedInvoiceDraft() {
     console.error("Could not delete saved draft:", error);
   }
 }
+
+// Automatically calculate ex-showroom price from Insurance IDV.
+// IDV = 95% of ex-showroom price.
+$("insuranceIdv").addEventListener("input", () => {
+  const idvField = $("insuranceIdv");
+  const exShowroomField = $("exShowroom");
+
+  if (idvField.value.trim() === "") {
+    update();
+    return;
+  }
+
+  const idv = Number(idvField.value);
+
+  if (Number.isFinite(idv) && idv > 0) {
+    exShowroomField.value = (idv / 0.95).toFixed(2);
+  } else {
+    exShowroomField.value = "";
+  }
+
+  // Refresh tax calculations and the invoice preview.
+  update();
+});
+
+const customerInput = document.getElementById("customer");
+
+customerInput.addEventListener("input", () => {
+  const customerName = customerInput.value.trim();
+
+  document.title = customerName
+    ? `INVOICE-${customerName}`
+    : "NDC INVOICE SYSTEM";
+});
