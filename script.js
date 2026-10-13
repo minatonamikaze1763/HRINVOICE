@@ -155,18 +155,128 @@ function update() {
       ? `Calculated taxable value: ${money(taxable)} • CGST: ${money(cgst)} • SGST: ${money(sgst)} • Total: ${money(total)}`
       : "Enter ex-showroom price to calculate tax breakup.";
 }
-document
-  .querySelectorAll("input,textarea,select")
-  .forEach((el) => el.addEventListener("input", update));
-$("printBtn").addEventListener("click", () => window.print());
+
+/* Keep the invoice preview synchronized with form fields */
+document.querySelectorAll("input, textarea, select").forEach((el) => {
+  el.addEventListener("input", update);
+  el.addEventListener("change", update);
+});
+
+/* ==========================================
+   REQUIRED FIELD VALIDATION
+========================================== */
+
+function validateInvoiceFields() {
+  const requiredFields = [
+    ["customer", "Customer name"],
+    ["address", "Customer address"],
+    ["phone", "Customer phone"],
+    ["date", "Invoice date"],
+    ["invoiceNo", "Invoice number"],
+    ["payment", "Hypothecation / payment method"],
+    ["supply", "Place of supply"],
+    ["model", "Vehicle model"],
+    ["variantCode", "Variant code"],
+    ["variantName", "Variant name / description"],
+    ["colour", "Vehicle colour"],
+    ["hsn", "HSN code"],
+    ["uom", "UOM"],
+    ["engine", "Engine number"],
+    ["chassis", "Chassis number"],
+    ["exShowroom", "Ex-showroom price"],
+    ["cgstRate", "CGST rate"],
+    ["sgstRate", "SGST rate"],
+  ];
+
+  const missing = [];
+
+  for (const [id, label] of requiredFields) {
+    const el = $(id);
+
+    if (!el || !el.value.trim()) {
+      missing.push(label);
+    }
+  }
+
+  // Validate the payment dropdown.
+  if (!$("payment").value) {
+    if (!missing.includes("Hypothecation / payment method")) {
+      missing.push("Hypothecation / payment method");
+    }
+  }
+
+  // Validate the date.
+  if (value("date") && Number.isNaN(Date.parse(value("date")))) {
+    missing.push("Valid invoice date");
+  }
+
+  // Validate the ex-showroom price.
+  const price = Number(value("exShowroom"));
+
+  if (value("exShowroom") && (!Number.isFinite(price) || price <= 0)) {
+    missing.push("Ex-showroom price must be greater than zero");
+  }
+
+  // Validate tax rates.
+  for (const [id, label] of [
+    ["cgstRate", "CGST rate"],
+    ["sgstRate", "SGST rate"],
+  ]) {
+    const el = $(id);
+    const rate = Number(value(id));
+
+    if (
+      el &&
+      value(id) !== "" &&
+      (!Number.isFinite(rate) ||
+        rate < 0 ||
+        rate > 100 ||
+        el.validity.badInput ||
+        el.validity.stepMismatch)
+    ) {
+      missing.push(label + " must be between 0 and 100");
+    }
+  }
+
+  if (missing.length) {
+    alert(
+      "Invoice cannot be generated yet.\n\n" +
+        "Please complete or correct these fields:\n\n" +
+        [...new Set(missing)].map((item) => "• " + item).join("\n"),
+    );
+
+    // Focus the first missing field when possible.
+    const firstMissing = requiredFields.find(
+      ([id, label]) => missing.includes(label) && $(id) && !$(id).value.trim(),
+    );
+
+    if (firstMissing) {
+      $(firstMissing[0]).focus();
+    }
+
+    return false;
+  }
+
+  return true;
+}
+
+/* ==========================================
+   PRINT / SAVE PDF
+========================================== */
+
+$("printBtn").addEventListener("click", () => {
+  if (!validateInvoiceFields()) return;
+
+  update();
+  window.print();
+});
+
 $("clearBtn").addEventListener("click", () => {
   [
     "customer",
     "relation",
     "address",
     "phone",
-    "invoiceNo",
-    "contactId",
     "model",
     "variantCode",
     "variantName",
@@ -174,14 +284,31 @@ $("clearBtn").addEventListener("click", () => {
     "engine",
     "chassis",
     "exShowroom",
-    "remarks",
-  ].forEach((id) => ($(id).value = ""));
+    "payment",
+  ].forEach((id) => {
+    const field = $(id);
+    if (field) field.value = "";
+  });
+
+  // Reset the invoice date to the current local date and time
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
+  const dateField = $("date");
+
+  if (dateField) {
+    if (dateField.type === "datetime-local") {
+      dateField.value = now.toISOString().slice(0, 16);
+    } else if (dateField.type === "date") {
+      dateField.value = now.toISOString().slice(0, 10);
+    }
+  }
+
+  // Refresh the invoice preview after all field changes
   update();
+  // Reload the page with a fresh invoice date and empty customer details.
+  window.location.reload();
 });
-const now = new Date();
-now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-$("date").value = now.toISOString().slice(0, 16);
-update();
 
 /* ==========================================
    FORM 22 + INVOICE ZIP GENERATOR
@@ -545,13 +672,17 @@ let draftSaveTimer = null;
 let isRestoringDraft = false;
 
 // Collect entered form values.
+
 function collectInvoiceDraft() {
   const draft = {};
 
   document
     .querySelectorAll("input[id], textarea[id], select[id]")
     .forEach((el) => {
-      // File inputs cannot be restored safely.
+      // Never save the invoice date in localStorage.
+      if (el.id === "date") return;
+
+      // File inputs and passwords cannot be restored safely.
       if (el.type === "file" || el.type === "password") return;
 
       if (el.type === "checkbox" || el.type === "radio") {
@@ -646,8 +777,28 @@ function restoreInvoiceDraft() {
   return true;
 }
 
-// Restore before the invoice preview is initialized.
+// Restore all saved invoice fields except the date.
 const invoiceDraftRestored = restoreInvoiceDraft();
+
+// Always initialize the invoice date using the current local time.
+function setCurrentInvoiceDate() {
+  const dateField = $("date");
+  if (!dateField) return;
+
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+
+  if (dateField.type === "datetime-local") {
+    dateField.value = now.toISOString().slice(0, 16);
+  } else if (dateField.type === "date") {
+    dateField.value = now.toISOString().slice(0, 10);
+  }
+
+  // Update the printed invoice preview.
+  update();
+}
+
+setCurrentInvoiceDate();
 
 // Save changes made to any form field.
 document.addEventListener("input", scheduleInvoiceDraftSave);
