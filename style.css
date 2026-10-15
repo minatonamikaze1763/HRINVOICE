@@ -959,3 +959,89 @@ button:hover {
     font-size: 7.5pt;
   }
 }
+
+/* =========================================
+   FIX: KEEP VEHICLE CODES AND NUMBERS
+   ON A SINGLE LINE
+========================================= */
+
+/* Prevent wrapping in vehicle details */
+.invoice .vehicle-tax-table td,
+.invoice .vehicle-tax-table th {
+  overflow-wrap: normal !important;
+  word-wrap: normal !important;
+  word-break: normal !important;
+}
+
+/* Keep variant code, engine and chassis values
+   on one line in the vehicle summary table */
+.invoice .vehicle-tax-table td {
+  white-space: nowrap !important;
+}
+
+/* Prevent wrapping in customer/detail values
+   where long identifiers are displayed */
+.invoice .meta .kv > span:last-child {
+  min-width: 0;
+}
+
+/* Preserve single-line values when printing */
+@media print {
+  .invoice .vehicle-tax-table td,
+  .invoice .vehicle-tax-table th {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+}
+
+/* =========================================
+   VEHICLE TABLE — CONTENT-BASED COLUMN WIDTHS
+========================================= */
+
+.invoice .vehicle-tax-table {
+  table-layout: auto !important;
+  width: 100%;
+}
+
+.invoice .vehicle-tax-table th,
+.invoice .vehicle-tax-table td {
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-wrap: normal !important;
+  word-break: normal !important;
+  vertical-align: middle;
+}
+
+/* Let columns size themselves to their content */
+.invoice .vehicle-tax-table th,
+.invoice .vehicle-tax-table td {
+  width: auto;
+}
+
+/* Keep descriptive text readable without breaking
+   vehicle identifiers into multiple lines */
+.invoice .vehicle-tax-table .description-row td {
+  white-space: normal !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+}
+
+/* Preserve the same sizing in printed/PDF output */
+@media print {
+  .invoice .vehicle-tax-table {
+    table-layout: auto !important;
+    width: 100% !important;
+  }
+
+  .invoice .vehicle-tax-table th,
+  .invoice .vehicle-tax-table td {
+    white-space: nowrap !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+  }
+
+  .invoice .vehicle-tax-table .description-row td {
+    white-space: normal !important;
+  }
+}
