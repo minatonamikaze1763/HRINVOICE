@@ -960,3 +960,39 @@ customerInput.addEventListener("input", () => {
     ? `INVOICE-${customerName}`
     : "NDC INVOICE SYSTEM";
 });
+
+/* =========================================
+   NDC INVOICE SYSTEM — KEYBOARD SHORTCUTS
+   Ctrl + X = Clear Form and Reload
+   Ctrl + S = Generate Invoice + Form 22 ZIP
+========================================= */
+
+document.addEventListener("keydown", function (event) {
+  // Ignore shortcuts while the user is using browser/system
+  // combinations involving Alt or the Windows/Command key.
+  if (!event.ctrlKey || event.altKey || event.metaKey) return;
+
+  const key = event.key.toLowerCase();
+
+  // Ctrl + X: Clear Form and Reload
+  if (key === "x") {
+    event.preventDefault();
+
+    const clearButton = document.getElementById("clearBtn");
+
+    if (clearButton && !clearButton.disabled) {
+      clearButton.click();
+    }
+  }
+
+  // Ctrl + S: Generate Invoice + Form 22 ZIP
+  if (key === "s") {
+    event.preventDefault();
+
+    const generateButton = document.getElementById("generateBundleBtn");
+
+    if (generateButton && !generateButton.disabled) {
+      generateButton.click();
+    }
+  }
+});
