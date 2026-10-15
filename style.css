@@ -418,8 +418,7 @@ button:hover {
 .company-signature .signstamp {
   position: absolute;
   top: -15px;
-  left: 40px;
-  width: 100%;
+  left: 100px;
   max-width: 230px;
   max-height: 95px;
   height: auto;

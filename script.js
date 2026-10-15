@@ -558,7 +558,6 @@ async function generateInvoicePDF() {
     throw new Error('Invoice preview element "#invoice" was not found.');
   }
 
-  // Make sure the invoice has real, visible dimensions.
   const rect = invoiceElement.getBoundingClientRect();
 
   if (
@@ -567,21 +566,19 @@ async function generateInvoicePDF() {
     rect.width === 0 ||
     rect.height === 0
   ) {
-    throw new Error(
-      "Invoice preview is hidden or has zero dimensions. Check the #invoice CSS.",
-    );
+    throw new Error("Invoice preview is hidden or has zero dimensions.");
   }
 
-  // Wait for the browser to finish rendering the latest preview.
+  // Wait for the invoice preview to finish rendering.
   await new Promise((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(resolve)),
   );
 
-  if (document.fonts && document.fonts.ready) {
+  if (document.fonts?.ready) {
     await document.fonts.ready;
   }
 
-  // Wait for invoice images to load before capturing them.
+  // Wait for invoice images to load.
   const images = Array.from(invoiceElement.querySelectorAll("img"));
 
   await Promise.all(
@@ -596,95 +593,135 @@ async function generateInvoicePDF() {
       if (img.decode && img.naturalWidth > 0) {
         try {
           await img.decode();
-        } catch (_) {
-          // Continue if an image cannot be decoded.
-        }
+        } catch (_) {}
       }
     }),
   );
 
-  // Verify html2pdf is available.
-  if (typeof window.html2pdf !== "function") {
-    throw new Error("html2pdf.js is not loaded.");
+  // Load html2canvas if it is not already available.
+  if (typeof window.html2canvas !== "function") {
+    await new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+
+      script.src =
+        "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+
+      script.onload = resolve;
+      script.onerror = () => reject(new Error("Could not load html2canvas."));
+
+      document.head.appendChild(script);
+    });
   }
 
-  const invoiceNumber = value("invoiceNo") || "Invoice";
+  // Capture the invoice as a high-resolution PNG canvas.
+  const canvas = await window.html2canvas(invoiceElement, {
+    scale: 3,
+    backgroundColor: "#ffffff",
+    useCORS: true,
+    allowTaint: false,
+    logging: false,
+    width: invoiceElement.scrollWidth,
+    height: invoiceElement.scrollHeight,
+    windowWidth: Math.max(
+      document.documentElement.clientWidth,
+      invoiceElement.scrollWidth,
+    ),
+    onclone: (clonedDocument) => {
+      const clonedInvoice = clonedDocument.getElementById("invoice");
 
-  // Render the actual invoice element, not the whole page.
-  const worker = window
-    .html2pdf()
-    .set({
-      margin: 0,
-      filename: `${invoiceNumber}.pdf`,
-      image: {
-        type: "jpeg",
-        quality: 0.98,
-      },
-      html2canvas: {
-        scale: 2,
-        useCORS: true,
-        allowTaint: false,
-        backgroundColor: "#ffffff",
-        logging: true,
-        width: invoiceElement.scrollWidth,
-        height: invoiceElement.scrollHeight,
-        windowWidth: Math.max(
-          document.documentElement.clientWidth,
-          invoiceElement.scrollWidth,
-        ),
-        onclone: (clonedDocument) => {
-          const clonedInvoice = clonedDocument.getElementById("invoice");
+      if (clonedInvoice) {
+        Object.assign(clonedInvoice.style, {
+          display: "block",
+          visibility: "visible",
+          opacity: "1",
+          backgroundColor: "#ffffff",
+          color: "#000000",
+          height: "auto",
+          maxHeight: "none",
+          overflow: "visible",
+        });
+      }
+    },
+  });
 
-          if (clonedInvoice) {
-            clonedInvoice.style.display = "block";
-            clonedInvoice.style.visibility = "visible";
-            clonedInvoice.style.opacity = "1";
-            clonedInvoice.style.backgroundColor = "#ffffff";
-            clonedInvoice.style.color = "#000000";
-            clonedInvoice.style.height = "auto";
-            clonedInvoice.style.maxHeight = "none";
-            clonedInvoice.style.overflow = "visible";
-          }
-        },
-      },
-      jsPDF: {
-        unit: "pt",
-        format: "a4",
-        orientation: "portrait",
-      },
-      pagebreak: {
-        mode: ["css", "legacy"],
-      },
-    })
-    .from(invoiceElement)
-    .toPdf();
-
-  const pdfBlob = await worker.output("blob");
-
-  // Do not silently package a failed or empty PDF.
-  if (!pdfBlob || pdfBlob.size < 500 || pdfBlob.type !== "application/pdf") {
-    throw new Error(
-      `Invoice PDF generation failed or produced an empty file. Blob size: ${
-        pdfBlob ? pdfBlob.size : 0
-      } bytes.`,
-    );
+  if (!canvas.width || !canvas.height) {
+    throw new Error("Invoice PNG generation returned an empty canvas.");
   }
 
-  // Verify that the generated file starts with a PDF signature.
+  // Convert the canvas to a PNG blob.
+  const pngBlob = await new Promise((resolve, reject) => {
+    canvas.toBlob((blob) => {
+      if (blob) {
+        resolve(blob);
+      } else {
+        reject(new Error("Could not convert the invoice canvas to PNG."));
+      }
+    }, "image/png");
+  });
+
+  if (pngBlob.size < 500) {
+    throw new Error("The generated invoice PNG is empty or invalid.");
+  }
+
+  // Create an A4 portrait PDF from the PNG.
+  if (!window.PDFLib) {
+    throw new Error("pdf-lib did not load.");
+  }
+
+  const pdfDoc = await PDFLib.PDFDocument.create();
+
+  const A4_WIDTH = 595.28;
+  const A4_HEIGHT = 841.89;
+  const margin = 18;
+
+  const page = pdfDoc.addPage([A4_WIDTH, A4_HEIGHT]);
+
+  const pngBytes = await pngBlob.arrayBuffer();
+  const embeddedPng = await pdfDoc.embedPng(pngBytes);
+
+  // Fit the entire invoice image onto one A4 page,
+  // preserving its aspect ratio without stretching.
+  const availableWidth = A4_WIDTH - margin * 2;
+  const availableHeight = A4_HEIGHT - margin * 2;
+
+  const scale = Math.min(
+    availableWidth / embeddedPng.width,
+    availableHeight / embeddedPng.height,
+  );
+
+  const drawWidth = embeddedPng.width * scale;
+  const drawHeight = embeddedPng.height * scale;
+
+  page.drawImage(embeddedPng, {
+    x: (A4_WIDTH - drawWidth) / 2,
+    y: (A4_HEIGHT - drawHeight) / 2,
+    width: drawWidth,
+    height: drawHeight,
+  });
+
+  const pdfBytes = await pdfDoc.save();
+
+  const pdfBlob = new Blob([pdfBytes], {
+    type: "application/pdf",
+  });
+
+  if (pdfBlob.size < 500) {
+    throw new Error("Invoice PDF generation failed.");
+  }
+
   const signature = await pdfBlob.slice(0, 5).text();
 
   if (signature !== "%PDF-") {
-    throw new Error("The generated invoice file is not a valid PDF.");
+    throw new Error("The generated invoice PDF is invalid.");
   }
 
-  console.log(`Invoice PDF generated successfully: ${pdfBlob.size} bytes`);
+  console.log(`Invoice PNG generated: ${pngBlob.size} bytes`);
+
+  console.log(`Invoice PDF generated: ${pdfBlob.size} bytes`);
 
   return pdfBlob;
 }
 
-/*
-  Generate both PDFs and package them into one ZIP.
-*/
 async function generateInvoiceAndForm22ZIP() {
   const button = $("generateBundleBtn");
 
