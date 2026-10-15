@@ -10,6 +10,102 @@ const value = (id) => $(id).value.trim();
 const safe = (id, text) => {
   $(id).textContent = text || "—";
 };
+/* ==========================================
+   INPUT SANITIZATION — TOP LEVEL
+========================================== */
+
+function normalizeInvoiceNumber() {
+  const field = $("invoiceNo");
+  if (!field) return;
+
+  field.value = field.value.replace(/\D/g, "").slice(0, 4);
+  field.maxLength = 4;
+  field.inputMode = "numeric";
+}
+
+// Name and S/O: English letters and spaces only.
+function sanitizeNameField(field) {
+  field.value = field.value.replace(/[^a-zA-Z ]/g, "").replace(/\s{2,}/g, " ");
+}
+
+// Mobile: numbers only, plus sign allowed only at the beginning.
+function sanitizeMobileField(field) {
+  const raw = field.value;
+
+  const digits = raw.replace(/\D/g, "").slice(0, 10);
+  const hasLeadingPlus = raw.trimStart().startsWith("+");
+
+  field.value = (hasLeadingPlus ? "+" : "") + digits;
+}
+
+function installInputSanitizers() {
+  const invoiceNumberField = $("invoiceNo");
+
+  if (invoiceNumberField) {
+    invoiceNumberField.addEventListener("input", normalizeInvoiceNumber);
+    normalizeInvoiceNumber();
+  }
+
+  ["customer", "relation"].forEach((id) => {
+    const field = $(id);
+    if (!field || field.dataset.sanitizerInstalled) return;
+
+    field.dataset.sanitizerInstalled = "true";
+
+    field.addEventListener("input", () => {
+      const oldValue = field.value;
+      const cursor = field.selectionStart;
+
+      sanitizeNameField(field);
+
+      // Keep the cursor near its original position.
+      if (oldValue !== field.value && cursor !== null) {
+        const cleanedBeforeCursor = oldValue
+          .slice(0, cursor)
+          .replace(/[^a-zA-Z ]/g, "")
+          .replace(/\s{2,}/g, " ");
+
+        const newPosition = Math.min(
+          cleanedBeforeCursor.length,
+          field.value.length,
+        );
+
+        field.setSelectionRange(newPosition, newPosition);
+      }
+
+      update();
+      scheduleInvoiceDraftSave();
+    });
+
+    // Also sanitize pasted or restored values.
+    sanitizeNameField(field);
+  });
+
+  const phoneField = $("phone");
+
+  if (phoneField && !phoneField.dataset.sanitizerInstalled) {
+    phoneField.dataset.sanitizerInstalled = "true";
+
+    phoneField.addEventListener("input", () => {
+      sanitizeMobileField(phoneField);
+      update();
+      scheduleInvoiceDraftSave();
+    });
+
+    sanitizeMobileField(phoneField);
+  }
+
+  update();
+}
+
+// Install after the HTML fields exist.
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", installInputSanitizers, {
+    once: true,
+  });
+} else {
+  installInputSanitizers();
+}
 function numberToWords(num) {
   num = Math.round(num);
   if (num === 0) return "Zero";
@@ -35,6 +131,7 @@ function numberToWords(num) {
     "Eighteen",
     "Nineteen",
   ];
+
   const tens = [
     "",
     "",
@@ -47,6 +144,7 @@ function numberToWords(num) {
     "Eighty",
     "Ninety",
   ];
+
   function under1000(n) {
     let s = "";
     if (n >= 100) {
@@ -103,7 +201,7 @@ function update() {
     "pSellerPhone",
     value("sellerPhone") ? "Contact # " + value("sellerPhone") : "",
   );
-  safe("pInvoiceNo", value("invoiceNo"));
+  safe("pInvoiceNo", "10175BJ26S" + value("invoiceNo"));
   safe("pDate", fmtDate);
   safe("pSupply", value("supply"));
   safe("pContactId", value("contactId"));
@@ -285,7 +383,7 @@ $("clearBtn").addEventListener("click", () => {
     "chassis",
     "exShowroom",
     "payment",
-    "insuranceIdv"
+    "insuranceIdv",
   ].forEach((id) => {
     const field = $(id);
     if (field) field.value = "";
