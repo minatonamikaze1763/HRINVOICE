@@ -75,6 +75,7 @@ function installInputSanitizers() {
 
       update();
       scheduleInvoiceDraftSave();
+      updatePageTitle();
     });
 
     // Also sanitize pasted or restored values.
@@ -988,16 +989,6 @@ $("insuranceIdv").addEventListener("input", () => {
   update();
 });
 
-const customerInput = document.getElementById("customer");
-
-customerInput.addEventListener("input", () => {
-  const customerName = customerInput.value.trim();
-
-  document.title = customerName
-    ? `INVOICE-${customerName}`
-    : "NDC INVOICE SYSTEM";
-});
-
 /* =========================================
    NDC INVOICE SYSTEM — KEYBOARD SHORTCUTS
    Ctrl + X = Clear Form and Reload
@@ -1033,3 +1024,13 @@ document.addEventListener("keydown", function (event) {
     }
   }
 });
+
+const customerInput = $("customer");
+
+function updatePageTitle() {
+  const customerName = customerInput.value.trim();
+
+  document.title = customerName
+    ? `INVOICE-${customerName}`
+    : "NDC INVOICE SYSTEM";
+}
