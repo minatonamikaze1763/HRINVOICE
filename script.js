@@ -303,7 +303,12 @@ function validateInvoiceFields() {
       missing.push("Hypothecation / payment method");
     }
   }
+  // Validate customer phone number (exactly 10 digits).
+  const phone = value("phone").replace(/\D/g, "");
 
+  if (value("phone").trim() && phone.length !== 10) {
+    missing.push("Customer phone must contain exactly 10 digits");
+  }
   // Validate the date.
   if (value("date") && Number.isNaN(Date.parse(value("date")))) {
     missing.push("Valid invoice date");
@@ -1020,8 +1025,14 @@ document.addEventListener("keydown", function (event) {
     const generateButton = document.getElementById("generateBundleBtn");
 
     if (generateButton && !generateButton.disabled) {
+      if (!validateInvoiceFields()) return;
       generateButton.click();
     }
+  }
+  if (key === "p") {
+    event.preventDefault();
+    if (!validateInvoiceFields()) return;
+    window.print();
   }
 });
 
@@ -1034,3 +1045,15 @@ function updatePageTitle() {
     ? `INVOICE-${customerName}`
     : "NDC INVOICE SYSTEM";
 }
+
+const payment = $("payment");
+const hpfeild = $("hpfeild");
+
+function toggleHpField() {
+  hpfeild.classList.toggle("hidden", payment.value === "---");
+}
+
+payment.addEventListener("change", toggleHpField);
+
+// Apply on page load
+toggleHpField();
