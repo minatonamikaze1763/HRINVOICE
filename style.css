@@ -834,3 +834,107 @@ button:hover {
     max-height: 75px;
   }
 }
+
+/* =========================================
+   INCLUDE SIGNATURE STAMP CHECKBOX
+========================================= */
+
+.stamp-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 10px 13px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel2);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: none;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.stamp-toggle:hover {
+  border-color: var(--gold);
+  background: #202016;
+}
+
+.stamp-toggle input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 17px;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #777;
+  border-radius: 4px;
+  background: #090909;
+  cursor: pointer;
+  display: grid;
+  place-content: center;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.stamp-toggle input[type="checkbox"]:checked {
+  border-color: var(--gold);
+  background: var(--gold);
+}
+
+.stamp-toggle input[type="checkbox"]:checked::after {
+  content: "";
+  width: 8px;
+  height: 4px;
+  border-bottom: 2px solid #111;
+  border-left: 2px solid #111;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.stamp-toggle input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* Keep the checkbox comfortable on smaller screens */
+@media (max-width: 600px) {
+  .stamp-toggle {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Danger button — Clear Form */
+button.danger {
+  background: #351515;
+  border: 1px solid #8f3535;
+  color: #ffb3b3;
+}
+
+button.danger:hover {
+  background: #572020;
+  border-color: #ff5555;
+  color: #ffffff;
+}
+
+button.danger:active {
+  background: #291010;
+  transform: translateY(1px);
+}
+
+button.danger:focus-visible {
+  outline: 2px solid #ff7777;
+  outline-offset: 3px;
+}
+
+button.danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

@@ -823,6 +823,7 @@ function collectInvoiceDraft() {
     .forEach((el) => {
       // Never save the invoice date in localStorage.
       if (el.id === "date") return;
+      if (el.id === "includeSignStamp") return;
 
       // File inputs and passwords cannot be restored safely.
       if (el.type === "file" || el.type === "password") return;
@@ -896,6 +897,7 @@ function restoreInvoiceDraft() {
   try {
     Object.entries(saved.fields).forEach(([id, field]) => {
       const el = $(id);
+      if (id === "includeSignStamp") return;
 
       if (!el || !field) return;
       if (el.type === "file" || el.type === "password") return;
@@ -1057,3 +1059,24 @@ payment.addEventListener("change", toggleHpField);
 
 // Apply on page load
 toggleHpField();
+
+/* ==========================================
+   SESSION-ONLY SIGNATURE STAMP TOGGLE
+========================================== */
+
+const includeSignStamp = $("includeSignStamp");
+const signStampImage = $("signStampImage");
+
+function toggleSignStamp() {
+  if (!includeSignStamp || !signStampImage) return;
+
+  signStampImage.classList.toggle("hidden", !includeSignStamp.checked);
+}
+
+if (includeSignStamp && signStampImage) {
+  // Default checked state comes from index.html.
+  toggleSignStamp();
+
+  // Apply changes immediately to the invoice preview.
+  includeSignStamp.addEventListener("change", toggleSignStamp);
+}

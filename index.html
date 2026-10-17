@@ -259,12 +259,18 @@
           </fieldset>
 
           <div class="actions">
+            
+<label class="stamp-toggle">
+  <input type="checkbox" id="includeSignStamp" checked>
+  Include signature stamp
+</label>
+
             <button type="button" id="printBtn" class="hidden">Print / Save PDF (CTRL + P)</button>
             
             <button type="button" id="generateBundleBtn">
   Generate Invoice + Form 22 ZIP (CTRL + S)
 </button>
-<button type="button" class="secondary" id="clearBtn">
+<button type="button" class="secondary danger" id="clearBtn">
               Clear Form and Reload (CTRL + X)
             </button>
           </div>
@@ -486,6 +492,8 @@
                 <div class="signstamp container">
 
                 <img
+                    id="signStampImage"
+
                     src="images/signstamp.png"
                     alt="SIGN AND STAMP"
                     class="hero-app-image ">
