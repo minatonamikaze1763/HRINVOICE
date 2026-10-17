@@ -1,0 +1,418 @@
+Invoice validation and duplicate prevention
+Highest priority
+Before generating documents, check that the invoice number is valid, the chassis and engine numbers are entered correctly, and the customer’s mobile number is valid. Warn if the same invoice number has already been generated.
+Why: Prevents avoidable errors in official paperwork.
+
+
+
+
+2. Invoice history and search
+Highly recommended
+Add a history panel that lets you search past invoices by invoice number, customer name, mobile number, or chassis number. Store records locally or export them to a backup file.
+Why: Your current autosave restores a working draft, but it isn't a proper searchable invoice register.
+
+4. Import an existing invoice PDF
+Upload a previously generated invoice, restore its details into the form, edit them, and regenerate the invoice and Form 22.
+Why: Saves time when correcting an invoice instead of entering everything again. This is one of your already-planned updates.
+
+5. Backup and restore
+Export saved invoice records to JSON or CSV and import them later. Include a confirmation before clearing saved data.
+Why: Browser local storage can be lost when site data is cleared or the browser profile changes.
+
+
+
+
+6. Quick entry for repeat vehicle models
+Save common Hero models, variant codes, colours, HSN and UOM combinations as presets. Selecting a model could fill the related fields automatically.
+Why: Less repetitive typing and fewer mismatched vehicle details.
+
+
+7. Mobile-friendly form and print preview
+Improve the layout for phones and smaller screens, with a dedicated preview action and clear progress during PDF generation.
+Why: Makes the tool easier to use at the dealership, even away from your desktop.
+
+
+
+
+
+Recommended notification messages
+
+1. File downloads
+Essential
+- 1012-INV-ZIP DOWNLOADED
+- FORM22.pdf DOWNLOADED
+- INVOICE.pdf DOWNLOADED
+  Show after triggering each download.
+
+
+
+
+2. Invoice generation
+Essential
+- Generating Invoice and Form 22...
+- Invoice PDF generated successfully
+- Form 22 generated successfully
+- ZIP file created successfully
+  Useful while the PDF and ZIP generation process is running.
+
+
+
+
+3. Validation and errors
+Essential
+- Please enter the customer name
+- Customer mobile number must be 10 digits
+- Form 22 template not found
+- PDF generation failed
+  Use warning or error styling, and keep important errors visible until dismissed.
+
+
+
+
+4. Autosave and draft recovery
+- Invoice details saved
+- Previous invoice details restored
+- Draft cleared successfully
+  Helpful when the page reloads or you return to an unfinished invoice.
+
+
+
+
+5. Vehicle and tax changes
+- EV mode enabled — GST rates updated
+- Standard vehicle mode enabled
+- Insurance IDV updated
+- Ex-showroom price recalculated
+  Confirms that dependent values changed as expected.
+
+
+
+
+6. User actions
+- Signature stamp hidden
+- Signature stamp included
+- Cash selected — hypothecation hidden
+- Invoice form reset
+  Useful for actions that change the invoice output or clear entered data.
+
+
+
+
+
+  7. when the user types incorrect data into some inputs - the input feild should shake a bit with red border which dispappers in 1 second
+
+
+
+
+NDC Invoice System — Settings Page Plan
+
+1. Invoice & validation settings
+Essential
+Configure how invoices are checked before generation.
+- Enable/disable duplicate invoice-number warnings
+- Require customer name, mobile, chassis and engine numbers
+- Validate mobile numbers as exactly 10 digits
+- Validate invoice number format
+- Warn about missing vehicle or tax details
+- Confirm before generating documents with warnings
+- Block generation when critical fields are invalid
+
+
+
+
+2. Document settings
+Control the invoice and Form 22 output.
+- Default signature stamp: included or hidden
+- Default Form 22 template: standard or EV
+- Default output: ZIP, invoice PDF or Form 22 PDF
+- Choose which documents to include in the ZIP
+- Configure download filename format
+- Print preview before downloading
+- A4 portrait layout and print scaling options
+
+
+
+
+3. Tax & vehicle settings
+Control default calculations without changing the underlying tax rules accidentally.
+- Default vehicle type: standard or EV
+- Default GST rate presets, subject to verification
+- Default HSN and UOM
+- Default insurance IDV calculation preferences
+- Ex-showroom price and tax breakdown display
+- Vehicle model and variant presets
+- Warning when required tax information is missing
+
+
+
+
+4. Data & autosave settings
+Protect entered details and generated invoice records.
+- Enable/disable draft autosave
+- Automatically restore the last draft
+- Clear draft on demand
+- Set whether invoice history is saved locally
+- Export or import invoice-history backups
+- Export settings as JSON
+- Restore default settings
+- Confirm before deleting history or clearing all data
+
+
+
+
+5. Notifications
+Customise your toast notification system.
+- Enable/disable notifications
+- Success notification duration
+- Error notification duration
+- Show download notifications
+- Show autosave and draft recovery messages
+- Show tax and vehicle change messages
+- Pause notification timer on hover
+- Sound alerts: optional, off by default
+
+
+
+
+6. Appearance & interface
+Make the app comfortable to use throughout the workday.
+- Dark, light or system theme
+- Compact or comfortable form spacing
+- Show/hide invoice preview panel
+- Default preview zoom
+- Enable keyboard shortcuts
+- Confirmation before clearing the form
+- Show or hide optional form sections
+
+
+
+
+7. Download & file naming
+Avoid confusing files when processing multiple customers.
+- Invoice filename pattern, e.g. 1012-INVOICE.pdf
+- Form 22 filename pattern, e.g. 1012-FORM22.pdf
+- ZIP filename pattern, e.g. 1012-INV-ZIP.zip
+- Include customer name in filenames: optional
+- Include invoice date in filenames: optional
+- Set default download type
+- Warn if a file with the same name may already exist
+
+
+
+
+8. Keyboard shortcuts
+- Enable/disable Ctrl + S for document generation
+- Enable/disable Ctrl + X for clear and reload
+- Add a shortcut to open settings
+- Add a shortcut for invoice preview
+- Show a shortcut reference panel
+- Warn before destructive keyboard actions
+
+
+
+
+9. About & maintenance
+- App name and version
+- Current template availability status
+- Check required image and template files
+- Check browser storage availability
+- View saved invoice count
+- Reset settings to defaults
+
+
+
+
+
+
+
+Bro, this should be a separate Invoice Register page in your NDC Invoice System — a central place where you can find every previously generated invoice, view it, and download the invoice PDF, Form 22 PDF, or the complete ZIP again. 🔥
+
+The most important rule: it must store actual generated invoice records, not just restore the last autosaved draft.
+
+# NDC Invoice System — Invoice Register Plan
+
+## 1. Page layout
+
+## Invoice Register
+
+Search, view and download generated documents
+
+Concept
+
+Total invoices
+
+# 128
+
+EV invoices
+
+# 16
+
+Search invoice register
+
+All vehicles
+
+Standard
+
+EV
+
+Newest first
+
+### Ravi Kumar
+
+Invoice #1012 · 17 Oct 2026
+
+Splendor+ XTEC
+
+Mobile: 9876543210
+
+Chassis: MBLHA10A…
+
+Generated
+
+&#x20;View Downloads
+
+### Suresh Kumar
+
+Invoice #1011 · 16 Oct 2026
+
+HF Deluxe
+
+Mobile: 9876501234
+
+Chassis: MBLHA11B…
+
+Generated
+
+&#x20;View Downloads
+
+### Priya Sharma
+
+Invoice #1010 · 15 Oct 2026
+
+Vida V2
+
+Mobile: 9876512345
+
+Chassis: MZVDA12C…
+
+Generated
+
+&#x20;View Downloads
+
+This is an interactive layout concept with sample data, not connected to your real invoice records.
+
+## 2. Features we should include
+
+A. Search and filters
+
+- Search by invoice number, customer name, mobile number, chassis number or engine number.
+- Filter by invoice date, standard vehicle/EV and document availability.
+- Sort newest or oldest first.
+- Show a clear “No invoices found” message.
+- Support partial matches and ignore letter case where appropriate.
+
+B. View invoice details Open an individual record in a dedicated details view.
+
+- Customer and contact details
+- Invoice number, date and vehicle information
+- Chassis and engine numbers
+- Payment or hypothecation details
+- Ex-showroom price, GST breakdown and insurance IDV
+- Document-generation status
+- View or print the invoice PDF
+
+C. Download previously generated documents
+
+Each invoice should have separate actions:
+
+- Download Invoice PDF
+- Download Form 22 PDF
+- Download Complete ZIP
+
+If a saved PDF is missing, clearly indicate that it needs to be regenerated from the saved details or restored from a backup.
+
+D. Reopen and correct an invoice
+
+- Load saved invoice details into the existing form.
+- Let the user correct details and regenerate documents.
+- Preserve the original record or track that a revision was made.
+- Warn before overwriting any saved document.
+- Keep the duplicate invoice-number check active.
+
+E. Record management
+
+- Export invoice records for backup.
+- Import a backup and detect duplicate records.
+- Delete a record only after confirmation.
+- Optionally select multiple invoices for bulk ZIP downloads or backup.
+- Display the number of saved records and the last backup date.
+
+## 3. What data should each record save?
+
+| Field                            | Purpose                                 |
+| -------------------------------- | --------------------------------------- |
+| Unique record ID                 | Identifies the saved record             |
+| Invoice number                   | Search and duplicate prevention         |
+| Customer name & mobile           | Customer search                         |
+| Invoice date                     | Sorting and date filtering              |
+| Chassis & engine numbers         | Vehicle identification and search       |
+| Model, variant & colour          | Vehicle details                         |
+| Standard/EV type                 | Select the correct Form 22 template     |
+| Tax, price & insurance details   | Rebuild the documents                   |
+| Original generated date          | Audit trail                             |
+| Invoice/Form 22/ZIP availability | Determine which files can be downloaded |
+| Saved invoice data               | Reopen and regenerate documents         |
+
+## 4. How should the documents be stored?
+
+For your browser-based app, I recommend this approach:
+
+
+
+JSON backup — portability
+
+Export records and relevant document files or package them into a backup ZIP, then restore them later.
+
+Important limitation
+
+Browser data can be lost if site data is cleared or the browser profile changes. A backup is essential. Local records are not automatically shared across computers.
+
+Important: Saving only the invoice details is enough to regenerate PDFs, but it is not the same as preserving the exact originally generated files. If you want to download the original documents later, store the generated PDFs/ZIP as well.
+
+## 5. Recommended workflow
+
+Generate Invoice + Form 22
+
+Validate the fields and check duplicate invoice numbers
+
+Save generated documents and invoice record
+
+Save details, PDFs, ZIP and generation timestamp
+
+Invoice Register
+
+Search → View → Download → Reopen / Regenerate
+
+## 6. Implementation order
+
+1. Build the invoice register and save records whenever document generation succeeds.
+2. Add search, sorting and filters.
+3. Add view details and download actions for the saved PDFs/ZIP.
+4. Add reopen/edit and safe regeneration.
+5. Add backup and restore.
+6. Add bulk operations and optional date/vehicle filters.
+
+My recommendation: keep Invoice Register as its own page, with a button in the main header beside Settings. Keep the current draft autosave separate from the permanent invoice history, and don't treat an invoice as successfully generated until the document-generation process actually succeeds.
+
+
+
+
+
+after making all of this changes - we need a thing called 
+download settings.json btn, 
+import settings.json, 
+download invoice records.json
+import invoice records.json,
+
+
+download both settings.json + invoice records.json zip file

@@ -523,6 +523,21 @@ EV Vehicle
       </section>
     </main>
 
+<!-- DOWNLOAD NOTIFICATION -->
+<div id="downloadToast" class="download-toast hidden" role="status" aria-live="polite">
+  <div class="toast-content">
+    <span class="toast-icon">✓</span>
+    <span id="downloadToastMessage">FILE DOWNLOADED</span>
+    <button
+      type="button"
+      id="closeDownloadToast"
+      class="toast-close"
+      aria-label="Close notification"
+    >&times;</button>
+  </div>
+  <div class="toast-timer"></div>
+</div>
+
     <script src="script.js"></script>
   </body>
 </html>

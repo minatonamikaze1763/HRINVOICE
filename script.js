@@ -1,4 +1,98 @@
 const $ = (id) => document.getElementById(id);
+
+/* ==========================================
+   DOWNLOAD TOAST — PAUSE TIMER ON HOVER
+========================================== */
+
+let downloadToastTimer = null;
+let downloadToastRemaining = 3000;
+let downloadToastStartedAt = 0;
+
+function showDownloadToast(filename) {
+  const toast = $("downloadToast");
+  const message = $("downloadToastMessage");
+  const closeButton = $("closeDownloadToast");
+
+  if (!toast || !message || !closeButton) return;
+
+  clearTimeout(downloadToastTimer);
+
+  downloadToastRemaining = 3000;
+  message.textContent = `${filename} DOWNLOADED`;
+
+  toast.classList.remove("hidden", "toast-active");
+
+  const timerBar = toast.querySelector(".toast-timer");
+
+  if (timerBar) {
+    timerBar.style.animation = "none";
+    timerBar.style.transform = "scaleX(1)";
+    void timerBar.offsetWidth;
+    timerBar.style.animation = "";
+  }
+
+  toast.classList.add("toast-active");
+
+  function startTimer() {
+    clearTimeout(downloadToastTimer);
+
+    if (toast.classList.contains("hidden")) return;
+
+    downloadToastStartedAt = Date.now();
+
+    if (timerBar) {
+      timerBar.style.animation = "none";
+      timerBar.style.transform = `scaleX(${downloadToastRemaining / 3000})`;
+      void timerBar.offsetWidth;
+      timerBar.style.animation = `toastTimerCountdown ${downloadToastRemaining}ms linear forwards`;
+    }
+
+    downloadToastTimer = setTimeout(() => {
+      toast.classList.add("hidden");
+      toast.classList.remove("toast-active");
+    }, downloadToastRemaining);
+  }
+
+  function pauseTimer() {
+    clearTimeout(downloadToastTimer);
+
+    downloadToastRemaining = Math.max(
+      0,
+      downloadToastRemaining - (Date.now() - downloadToastStartedAt),
+    );
+
+    if (timerBar) {
+      const progress = downloadToastRemaining / 3000;
+      timerBar.style.animation = "none";
+      timerBar.style.transform = `scaleX(${progress})`;
+    }
+  }
+
+  // Pause while the mouse is over the notification.
+  toast.onmouseenter = pauseTimer;
+
+  // Resume the remaining countdown when the mouse leaves.
+  toast.onmouseleave = () => {
+    if (!toast.classList.contains("hidden")) {
+      if (downloadToastRemaining <= 0) {
+        toast.classList.add("hidden");
+        toast.classList.remove("toast-active");
+      } else {
+        startTimer();
+      }
+    }
+  };
+
+  // Close immediately when × is clicked.
+  closeButton.onclick = () => {
+    clearTimeout(downloadToastTimer);
+    toast.classList.add("hidden");
+    toast.classList.remove("toast-active");
+  };
+
+  startTimer();
+}
+
 const money = (n) =>
   new Intl.NumberFormat("en-IN", {
     style: "currency",
@@ -788,6 +882,8 @@ async function generateInvoiceAndForm22ZIP() {
     document.body.appendChild(link);
     link.click();
     link.remove();
+    // Show the download confirmation.
+    showDownloadToast(`${invoiceNumber}_INV-ZIP`);
 
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (error) {
