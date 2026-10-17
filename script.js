@@ -503,7 +503,9 @@ async function generateForm22PDF() {
 
   const data = getForm22Data();
 
-  const response = await fetch("./22.pdf", {
+  const form22File = $("evVehicle")?.checked ? "./ev22.pdf" : "./22.pdf";
+
+  const response = await fetch(form22File, {
     cache: "no-store",
   });
 
