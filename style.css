@@ -938,3 +938,56 @@ button.danger:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* =========================================
+   DISABLED FORM ELEMENTS
+========================================= */
+
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(35%);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled {
+  background: #101010;
+  border-color: #292929;
+  color: #777;
+}
+
+/* =========================================
+   READONLY FORM ELEMENTS
+========================================= */
+
+input:read-only,
+textarea:read-only {
+  background: #1c1a12;
+  border-color: #665a2c;
+  color: #d7bd55;
+  cursor: not-allowed;
+}
+
+/* Readonly fields should not look interactive on hover */
+input:read-only:hover,
+textarea:read-only:hover {
+  border-color: #665a2c;
+}
+
+/* Preserve normal text selection in readonly fields */
+input:read-only,
+textarea:read-only {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Clear focus styling for readonly fields */
+input:read-only:focus,
+textarea:read-only:focus {
+  outline: none;
+  box-shadow: none;
+}

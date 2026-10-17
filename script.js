@@ -824,7 +824,9 @@ function collectInvoiceDraft() {
       // Never save the invoice date in localStorage.
       if (el.id === "date") return;
       if (el.id === "includeSignStamp") return;
-
+      if (el.id === "evVehicle") return;
+      if (el.id === "cgstRate") return;
+      if (el.id === "sgstRate") return;
       // File inputs and passwords cannot be restored safely.
       if (el.type === "file" || el.type === "password") return;
 
@@ -898,7 +900,9 @@ function restoreInvoiceDraft() {
     Object.entries(saved.fields).forEach(([id, field]) => {
       const el = $(id);
       if (id === "includeSignStamp") return;
-
+      if (id === "evVehicle") return;
+      if (id === "cgstRate") return;
+      if (id === "sgstRate") return;
       if (!el || !field) return;
       if (el.type === "file" || el.type === "password") return;
 
@@ -1079,4 +1083,26 @@ if (includeSignStamp && signStampImage) {
 
   // Apply changes immediately to the invoice preview.
   includeSignStamp.addEventListener("change", toggleSignStamp);
+}
+
+/* ==========================================
+   EV VEHICLE — GST RATE TOGGLE
+========================================== */
+
+const evVehicle = $("evVehicle");
+const cgstRate = $("cgstRate");
+const sgstRate = $("sgstRate");
+
+function updateGSTRates() {
+  const rate = evVehicle.checked ? 2.5 : 9;
+
+  cgstRate.value = rate;
+  sgstRate.value = rate;
+
+  update();
+  scheduleInvoiceDraftSave();
+}
+
+if (evVehicle && cgstRate && sgstRate) {
+  evVehicle.addEventListener("change", updateGSTRates);
 }
