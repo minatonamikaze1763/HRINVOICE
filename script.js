@@ -1,5 +1,7 @@
 const $ = (id) => document.getElementById(id);
 
+let forceReload = false;
+
 /* ==========================================
    DOWNLOAD TOAST — PAUSE TIMER ON HOVER
 ========================================== */
@@ -470,6 +472,7 @@ $("printBtn").addEventListener("click", () => {
 });
 
 $("clearBtn").addEventListener("click", () => {
+  if (!confirm("Are you sure you want to clear the form and reload?")) return;
   [
     "customer",
     "relation",
@@ -1111,8 +1114,8 @@ document.addEventListener("keydown", function (event) {
 
   const key = event.key.toLowerCase();
 
-  // Ctrl + X: Clear Form and Reload
-  if (key === "x") {
+  // Ctrl + e: Clear Form and Reload
+  if (key === "e") {
     event.preventDefault();
 
     const clearButton = document.getElementById("clearBtn");
