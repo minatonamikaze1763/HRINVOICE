@@ -1095,3 +1095,141 @@ textarea:read-only:focus {
     bottom: 12px;
   }
 }
+
+/* ==========================================
+   TOAST TYPE VARIANTS
+   Uses existing :root variables
+========================================== */
+
+/* INFO — blue accent, no close button */
+.download-toast.toast-info {
+  border-color: #60a5fa;
+}
+
+.download-toast.toast-info .toast-icon {
+  background: #60a5fa;
+  color: #080808;
+}
+
+.download-toast.toast-info .toast-timer {
+  background: #60a5fa;
+}
+
+/* DANGER — red accent, close button visible */
+.download-toast.toast-danger {
+  border-color: var(--danger);
+}
+
+.download-toast.toast-danger .toast-icon {
+  background: var(--danger);
+  color: #080808;
+}
+
+.download-toast.toast-danger .toast-timer {
+  background: var(--danger);
+}
+
+.download-toast.toast-danger .toast-close:hover {
+  color: var(--danger);
+}
+
+/* SUCCESS — green accent, close button visible */
+.download-toast.toast-success {
+  border-color: #4ade80;
+}
+
+.download-toast.toast-success .toast-icon {
+  background: #4ade80;
+  color: #080808;
+}
+
+.download-toast.toast-success .toast-timer {
+  background: #4ade80;
+}
+
+.download-toast.toast-success .toast-close:hover {
+  color: #4ade80;
+}
+
+/* ==========================================
+   LOADING — PERSISTENT NOTIFICATION
+   No close button, no countdown
+========================================== */
+
+.download-toast.toast-loading {
+  border-color: var(--gold);
+}
+
+.download-toast.toast-loading .toast-icon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+
+  border: 3px solid rgb(215 189 85 / 25%);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+
+  background: transparent;
+  color: transparent;
+
+  animation: toastSpinner 0.8s linear infinite;
+}
+
+.download-toast.toast-loading .toast-close,
+.download-toast.toast-loading .toast-timer {
+  display: none !important;
+}
+
+.download-toast.toast-loading.toast-active .toast-timer {
+  animation: none;
+}
+
+/* Loading spinner */
+
+@keyframes toastSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================
+   INFO NOTIFICATION — NO CLOSE BUTTON
+========================================== */
+
+.download-toast.toast-info .toast-close {
+  display: none !important;
+}
+
+/* ==========================================
+   PERSISTENT STATE
+========================================== */
+
+.download-toast.toast-persistent .toast-timer {
+  display: none !important;
+}
+
+/* Respect existing hidden class */
+.download-toast.hidden {
+  display: none !important;
+}
+
+/* Keep toast content and timer in separate rows */
+.download-toast {
+  display: block;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* The countdown bar must stay at the bottom */
+.toast-timer {
+  display: block;
+}
+
+/* Hide close button when requested by JavaScript */
+.toast-close.hidden {
+  display: none !important;
+}

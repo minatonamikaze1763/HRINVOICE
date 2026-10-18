@@ -2,97 +2,164 @@ const $ = (id) => document.getElementById(id);
 
 let forceReload = false;
 
-/* ==========================================
-   DOWNLOAD TOAST — PAUSE TIMER ON HOVER
-========================================== */
-
 let downloadToastTimer = null;
 let downloadToastRemaining = 3000;
 let downloadToastStartedAt = 0;
+let downloadToastIsPaused = false;
 
-function showDownloadToast(filename) {
+function showDownloadToast(message, type = "success", duration = 3000) {
   const toast = $("downloadToast");
-  const message = $("downloadToastMessage");
+  const messageElement = $("downloadToastMessage");
+  const iconElement = $("downloadToastIcon");
   const closeButton = $("closeDownloadToast");
 
-  if (!toast || !message || !closeButton) return;
+  if (!toast || !messageElement || !iconElement || !closeButton) return;
+
+  const validTypes = ["info", "danger", "success", "loading"];
+  if (!validTypes.includes(type)) type = "info";
 
   clearTimeout(downloadToastTimer);
+  downloadToastTimer = null;
 
+  downloadToastRemaining = Math.max(0, duration);
+  downloadToastIsPaused = false;
+
+  const icons = {
+    info: "ℹ",
+    danger: "✕",
+    success: "✓",
+    loading: "",
+  };
+
+  iconElement.textContent = icons[type];
+  messageElement.textContent = message;
+
+  toast.classList.remove(
+    "hidden",
+    "toast-active",
+    "toast-info",
+    "toast-danger",
+    "toast-success",
+    "toast-loading",
+  );
+
+  toast.classList.add(`toast-${type}`, "toast-active");
+
+  if (type === "loading") {
+    closeButton.classList.add("hidden");
+    toast.classList.add("toast-persistent");
+    return;
+  }
+
+  closeButton.classList.toggle("hidden", type === "info");
+  toast.classList.remove("toast-persistent");
+
+  // Only closable notifications pause on hover.
+  if (type === "success" || type === "danger") {
+    scheduleToastClose();
+  } else {
+    downloadToastTimer = setTimeout(hideDownloadToast, downloadToastRemaining);
+  }
+}
+
+function scheduleToastClose() {
+  clearTimeout(downloadToastTimer);
+
+  if (downloadToastIsPaused) return;
+
+  downloadToastStartedAt = Date.now();
+
+  downloadToastTimer = setTimeout(() => {
+    hideDownloadToast();
+  }, downloadToastRemaining);
+}
+
+function pauseDownloadToast() {
+  const toast = $("downloadToast");
+  if (!toast || toast.classList.contains("hidden")) return;
+
+  const isClosable =
+    toast.classList.contains("toast-success") ||
+    toast.classList.contains("toast-danger");
+
+  if (!isClosable || downloadToastIsPaused) return;
+
+  clearTimeout(downloadToastTimer);
+  downloadToastTimer = null;
+
+  const elapsed = Date.now() - downloadToastStartedAt;
+  downloadToastRemaining = Math.max(0, downloadToastRemaining - elapsed);
+
+  downloadToastIsPaused = true;
+}
+
+function resumeDownloadToast() {
+  const toast = $("downloadToast");
+  if (!toast || toast.classList.contains("hidden")) return;
+  if (!downloadToastIsPaused) return;
+
+  downloadToastIsPaused = false;
+  scheduleToastClose();
+}
+
+function hideDownloadToast() {
+  const toast = $("downloadToast");
+
+  clearTimeout(downloadToastTimer);
+  downloadToastTimer = null;
+  downloadToastIsPaused = false;
   downloadToastRemaining = 3000;
-  message.textContent = `${filename} DOWNLOADED`;
 
-  toast.classList.remove("hidden", "toast-active");
+  if (!toast) return;
 
-  const timerBar = toast.querySelector(".toast-timer");
+  toast.classList.add("hidden");
+  toast.classList.remove("toast-active", "toast-persistent");
+}
 
-  if (timerBar) {
-    timerBar.style.animation = "none";
-    timerBar.style.transform = "scaleX(1)";
-    void timerBar.offsetWidth;
-    timerBar.style.animation = "";
-  }
+// Attach hover and close handlers once the elements exist.
+const downloadToastElement = $("downloadToast");
+const closeDownloadToast = $("closeDownloadToast");
 
-  toast.classList.add("toast-active");
+if (downloadToastElement) {
+  downloadToastElement.addEventListener("mouseenter", pauseDownloadToast);
 
-  function startTimer() {
-    clearTimeout(downloadToastTimer);
+  downloadToastElement.addEventListener("mouseleave", resumeDownloadToast);
+}
 
-    if (toast.classList.contains("hidden")) return;
+if (closeDownloadToast) {
+  closeDownloadToast.onclick = hideDownloadToast;
+}
 
-    downloadToastStartedAt = Date.now();
+function notifySuccess(message, duration = 3000) {
+  showDownloadToast(message, "success", duration);
+}
 
-    if (timerBar) {
-      timerBar.style.animation = "none";
-      timerBar.style.transform = `scaleX(${downloadToastRemaining / 3000})`;
-      void timerBar.offsetWidth;
-      timerBar.style.animation = `toastTimerCountdown ${downloadToastRemaining}ms linear forwards`;
-    }
+function notifyError(message, duration = 5000) {
+  showDownloadToast(message, "danger", duration);
+}
 
-    downloadToastTimer = setTimeout(() => {
-      toast.classList.add("hidden");
-      toast.classList.remove("toast-active");
-    }, downloadToastRemaining);
-  }
+function notifyInfo(message, duration = 3000) {
+  showDownloadToast(message, "info", duration);
+}
 
-  function pauseTimer() {
-    clearTimeout(downloadToastTimer);
+function notifyLoading(message) {
+  showDownloadToast(message, "loading");
+}
 
-    downloadToastRemaining = Math.max(
-      0,
-      downloadToastRemaining - (Date.now() - downloadToastStartedAt),
-    );
+function notifyDraftSaved() {
+  notifySuccess("Invoice draft saved");
+}
 
-    if (timerBar) {
-      const progress = downloadToastRemaining / 3000;
-      timerBar.style.animation = "none";
-      timerBar.style.transform = `scaleX(${progress})`;
-    }
-  }
+function notifyDraftRestored() {
+  notifyInfo("Previous invoice details restored");
+}
 
-  // Pause while the mouse is over the notification.
-  toast.onmouseenter = pauseTimer;
+function notifyPDFReady(filename) {
+  notifySuccess(`Download started: ${filename}`);
+}
 
-  // Resume the remaining countdown when the mouse leaves.
-  toast.onmouseleave = () => {
-    if (!toast.classList.contains("hidden")) {
-      if (downloadToastRemaining <= 0) {
-        toast.classList.add("hidden");
-        toast.classList.remove("toast-active");
-      } else {
-        startTimer();
-      }
-    }
-  };
-
-  // Close immediately when × is clicked.
-  closeButton.onclick = () => {
-    clearTimeout(downloadToastTimer);
-    toast.classList.add("hidden");
-    toast.classList.remove("toast-active");
-  };
-
-  startTimer();
+function notifyImportError(message) {
+  notifyError(`Import failed: ${message}`, 5000);
 }
 
 const money = (n) =>
@@ -364,6 +431,7 @@ document.querySelectorAll("input, textarea, select").forEach((el) => {
 function validateInvoiceFields() {
   const requiredFields = [
     ["customer", "Customer name"],
+    ["relation", "Customer S/O or relation"],
     ["address", "Customer address"],
     ["phone", "Customer phone"],
     ["date", "Invoice date"],
@@ -472,7 +540,12 @@ $("printBtn").addEventListener("click", () => {
 });
 
 $("clearBtn").addEventListener("click", () => {
-  if (!confirm("Are you sure you want to clear the form and reload?")) return;
+  if (!confirm("Are you sure you want to clear the form and reload?")) {
+    notifyInfo("Form clearing cancelled");
+    return;
+  }
+
+  notifyInfo("Clearing invoice form...");
   [
     "customer",
     "relation",
@@ -836,7 +909,8 @@ async function generateInvoiceAndForm22ZIP() {
 
   button.disabled = true;
   button.textContent = "Generating PDFs...";
-
+  // Persistent loading notification: no close button or timer.
+  showDownloadToast("Generating Invoice + Form 22 ZIP...", "loading");
   try {
     // Refresh invoice preview from the latest input values.
     update();
@@ -878,20 +952,23 @@ async function generateInvoiceAndForm22ZIP() {
     const link = document.createElement("a");
 
     const invoiceNumber = value("invoiceNo") || "Invoice";
-
+    const zipFilename = `${invoiceNumber}_Invoice_Form22.zip`;
     link.href = url;
-    link.download = `${invoiceNumber}_Invoice_Form22.zip`;
+    link.download = zipFilename;
 
     document.body.appendChild(link);
     link.click();
     link.remove();
     // Show the download confirmation.
-    showDownloadToast(`${invoiceNumber}_INV-ZIP`);
+    showDownloadToast(`${zipFilename} downloaded successfully`, "success");
 
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   } catch (error) {
     console.error("Invoice/Form 22 ZIP generation failed:", error);
-
+    notifyError(
+      `ZIP generation failed: ${error.message || "Unknown error"}`,
+      6000,
+    );
     alert(
       "Could not generate the ZIP.\n\n" +
         error.message +
@@ -1028,7 +1105,9 @@ function restoreInvoiceDraft() {
 
 // Restore all saved invoice fields except the date.
 const invoiceDraftRestored = restoreInvoiceDraft();
-
+if (invoiceDraftRestored) {
+  notifyDraftRestored();
+}
 // Always initialize the invoice date using the current local time.
 function setCurrentInvoiceDate() {
   const dateField = $("date");
@@ -1172,10 +1251,17 @@ toggleHpField();
 const includeSignStamp = $("includeSignStamp");
 const signStampImage = $("signStampImage");
 
-function toggleSignStamp() {
+function toggleSignStamp(showNotification = false) {
   if (!includeSignStamp || !signStampImage) return;
 
   signStampImage.classList.toggle("hidden", !includeSignStamp.checked);
+  if (showNotification) {
+    notifyInfo(
+      includeSignStamp.checked
+        ? "Signature stamp included"
+        : "Signature stamp excluded",
+    );
+  }
 }
 
 if (includeSignStamp && signStampImage) {
@@ -1195,13 +1281,20 @@ const cgstRate = $("cgstRate");
 const sgstRate = $("sgstRate");
 
 function updateGSTRates() {
-  const rate = evVehicle.checked ? 2.5 : 9;
+  const isEV = evVehicle.checked;
+
+  const rate = isEV ? 2.5 : 9;
 
   cgstRate.value = rate;
   sgstRate.value = rate;
 
   update();
   scheduleInvoiceDraftSave();
+  notifyInfo(
+    isEV
+      ? "EV mode enabled — CGST 2.5% and SGST 2.5%"
+      : "Standard mode enabled — CGST 9% and SGST 9%",
+  );
 }
 
 if (evVehicle && cgstRate && sgstRate) {
