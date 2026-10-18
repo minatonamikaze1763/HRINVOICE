@@ -2,6 +2,138 @@ const $ = (id) => document.getElementById(id);
 
 let forceReload = false;
 
+/* ==========================================
+   SESSION NOTIFICATION CENTER LOGIC
+========================================== */
+const notificationDump = [];
+
+const notificationPanel = $("notificationPanel");
+const notificationCenterBtn = $("notificationCenterBtn");
+const notificationCount = $("notificationCount");
+const notificationList = $("notificationList");
+const notificationSummary = $("notificationSummary");
+
+function logNotification(message, type = "info") {
+  notificationDump.push({
+    timestamp: new Date().toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    }),
+    type,
+    message: String(message),
+  });
+
+  renderNotificationHistory();
+}
+
+function renderNotificationHistory() {
+  if (!notificationList) return;
+
+  const total = notificationDump.length;
+
+  if (notificationCount) {
+    notificationCount.textContent = total > 99 ? "99+" : String(total);
+    notificationCount.classList.toggle("hidden", total === 0);
+  }
+
+  if (notificationSummary) {
+    notificationSummary.textContent = `${total} notification${total === 1 ? "" : "s"} this session`;
+  }
+
+  notificationList.replaceChildren();
+
+  if (total === 0) {
+    const empty = document.createElement("div");
+    empty.className = "notification-empty";
+    empty.textContent = "No notifications yet.";
+    notificationList.appendChild(empty);
+    return;
+  }
+
+  // Newest notifications appear at the top.
+  [...notificationDump].reverse().forEach((entry) => {
+    const item = document.createElement("article");
+    item.className = `notification-entry toast-${entry.type}`;
+
+    const marker = document.createElement("span");
+    marker.className = "notification-type-marker";
+
+    const content = document.createElement("div");
+    content.className = "notification-entry-content";
+
+    const top = document.createElement("div");
+    top.className = "notification-entry-top";
+
+    const type = document.createElement("span");
+    type.className = "notification-entry-type";
+    type.textContent = entry.type;
+
+    const time = document.createElement("time");
+    time.className = "notification-entry-time";
+    time.textContent = entry.timestamp;
+
+    const message = document.createElement("div");
+    message.className = "notification-entry-message";
+    message.textContent = entry.message;
+
+    top.append(type, time);
+    content.append(top, message);
+    item.append(marker, content);
+    notificationList.appendChild(item);
+  });
+}
+
+function openNotificationPanel() {
+  if (!notificationPanel) return;
+
+  notificationPanel.classList.remove("hidden");
+  notificationCenterBtn?.setAttribute("aria-expanded", "true");
+}
+
+function closeNotificationPanel() {
+  if (!notificationPanel) return;
+
+  notificationPanel.classList.add("hidden");
+  notificationCenterBtn?.setAttribute("aria-expanded", "false");
+}
+
+function toggleNotificationPanel() {
+  if (!notificationPanel) return;
+
+  if (notificationPanel.classList.contains("hidden")) {
+    openNotificationPanel();
+  } else {
+    closeNotificationPanel();
+  }
+}
+
+function clearNotificationDump() {
+  notificationDump.length = 0;
+  renderNotificationHistory();
+}
+
+notificationCenterBtn?.addEventListener("click", toggleNotificationPanel);
+
+$("closeNotificationPanel")?.addEventListener("click", closeNotificationPanel);
+
+$("clearNotificationHistory")?.addEventListener("click", () => {
+  clearNotificationDump();
+});
+
+// Escape closes the panel.
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    closeNotificationPanel();
+  }
+});
+
+renderNotificationHistory();
+
 let downloadToastTimer = null;
 let downloadToastRemaining = 3000;
 let downloadToastStartedAt = 0;
@@ -14,7 +146,7 @@ function showDownloadToast(message, type = "success", duration = 3000) {
   const closeButton = $("closeDownloadToast");
 
   if (!toast || !messageElement || !iconElement || !closeButton) return;
-
+  logNotification(message, type);
   const validTypes = ["info", "danger", "success", "loading"];
   if (!validTypes.includes(type)) type = "info";
 
@@ -901,6 +1033,7 @@ async function generateInvoicePDF() {
 }
 
 async function generateInvoiceAndForm22ZIP() {
+  if (!validateInvoiceFields()) return;
   const button = $("generateBundleBtn");
 
   if (button.disabled) return;

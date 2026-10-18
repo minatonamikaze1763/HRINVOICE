@@ -514,6 +514,42 @@
     <div class="toast-timer" aria-hidden="true"></div>
   </div>
 
+  <!-- ==========================================
+     NDC NOTIFICATION CENTER
+========================================== -->
+
+  <button type="button" id="notificationCenterBtn" class="notification-center-btn" aria-label="Open notifications"
+    aria-expanded="false" aria-controls="notificationPanel">
+    <span class="notification-bell">♧</span>
+    <span>Notifications</span>
+    <span id="notificationCount" class="notification-count hidden">0</span>
+  </button>
+
+  <section id="notificationPanel" class="notification-panel hidden" aria-label="Notification history">
+    <div class="notification-panel-header">
+      <div>
+        <h3>Notifications</h3>
+        <p id="notificationSummary">Session activity</p>
+      </div>
+
+      <button type="button" id="clearNotificationHistory" class="notification-clear-btn">
+        Clear all
+      </button>
+
+      <button type="button" id="closeNotificationPanel" class="notification-close-btn"
+        aria-label="Close notifications">×</button>
+    </div>
+
+    <div id="notificationList" class="notification-list">
+      <div class="notification-empty">
+        No notifications yet.
+      </div>
+    </div>
+
+    <div class="notification-panel-footer">
+      Session history · Cleared on page reload
+    </div>
+  </section>
 
 
   <script src="script.js"></script>
